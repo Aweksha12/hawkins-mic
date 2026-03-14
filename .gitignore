@@ -1,0 +1,19 @@
+# Node.js
+node_modules/
+dist/
+build/
+*.log
+
+# Project specific
+cerebro1-backend/uploads/*
+!cerebro1-backend/uploads/.gitkeep
+cerebro1-backend/tmp/
+
+# IDE files
+.vscode/
+.idea/
+.DS_Store
+
+# Environment variables
+.env
+.env.*
