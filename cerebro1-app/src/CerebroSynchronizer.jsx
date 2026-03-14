@@ -1055,14 +1055,15 @@ const ListenerPage = ({ callsign, session, onDisconnect }) => {
   const setVideoSource = useCallback((src) => {
     const v = videoRef.current;
     if (!v) return;
-
+    
     addLog("INITIATING DOWNLINK: " + src);
+    console.log("[SYSTEM] LOADING VIDEO SOURCE:", src);
     setHasVideo(false);
     hasVideoRef.current = false;
     setSynced(false);
 
     const finalSrc = src.includes('?') ? `${src}&t=${Date.now()}` : `${src}?t=${Date.now()}`;
-
+    
     v.pause();
     v.src = finalSrc;
     v.load();
@@ -1125,10 +1126,12 @@ const ListenerPage = ({ callsign, session, onDisconnect }) => {
 
     const onVideoSourceEvent = ({ videoSource }) => {
       addLog("NEW SIGNAL DETECTED — RE-TUNING...");
+      console.log("[SOCKET] NEW VIDEO SOURCE RECEIVED:", videoSource);
       setVideoSource(videoSource);
     };
 
     const onSyncPulse = ({ currentTime, playing, playbackRate }) => {
+      console.log("[SOCKET] SYNC PULSE RECEIVED:", { currentTime, playing, playbackRate });
       syncVideo(currentTime, playing, playbackRate);
     };
 

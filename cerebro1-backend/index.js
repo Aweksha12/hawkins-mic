@@ -83,19 +83,20 @@ app.post('/upload', (req, res) => {
     }
 
     let host = req.get('host'); 
-    const protocol = req.protocol;
+    // Handle Render's proxy by checking x-forwarded-proto
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
 
-    // Critical fix: If host is localhost/127.0.0.1, swap it for the server's actual IP
-    // so that other devices (listeners) on the network can actually reach it.
-    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    // In a cloud environment like Render, we want the external host, not the internal IP.
+    // The previous localhost replacement was only for local network testing.
+    if (process.env.NODE_ENV !== 'production' && (host.includes('localhost') || host.includes('127.0.0.1'))) {
       const lanIP = getLocalIP();
       host = host.replace(/localhost|127\.0\.0\.1/, lanIP);
-      console.log(`>>> [UPLOAD] localhost detected, swapping to LAN IP: ${host}`);
+      console.log(`>>> [UPLOAD] localhost detected in dev, swapping to LAN IP: ${host}`);
     }
 
     const fileUrl = `${protocol}://${host}/uploads/${fileName}`;
     
-    console.log(`>>> [UPLOAD] Success! URL: ${fileUrl}`);
+    console.log(`>>> [UPLOAD] Success! Generated Public URL: ${fileUrl}`);
     res.json({ url: fileUrl });
   });
 });
@@ -178,7 +179,9 @@ io.on('connection', (socket) => {
     if (room && room.broadcaster?.socketId === socket.id) {
       room.videoSource = videoSource;
       socket.to(roomId).emit('video_source_event', { videoSource });
-      console.log(`Room ${roomId}: Video source set to ${videoSource}`);
+      console.log(`Room ${roomId}: Video source set to ${videoSource} for ${room.listeners.length} listeners`);
+    } else {
+      console.warn(`Room ${roomId}: Unauthorized set_video_source attempt by ${socket.id}`);
     }
   });
 
