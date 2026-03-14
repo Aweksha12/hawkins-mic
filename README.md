@@ -31,3 +31,20 @@ A real-time, high-fidelity video synchronization platform inspired by the aesthe
 - **Network Awareness**: The backend automatically detects the local LAN IP to ensure seamless connectivity for listeners on the same network.
 - **Dynamic Transmission Rates**: Native support for synchronized playback speeds (0.5x, 1x, 1.5x, 2x), allowing for collaborative analysis or fast-forwarding.
 - **Operative Identity**: Persistent callsign-based identification for tracking active listeners within the broadcaster's tactical dashboard.
+
+## 🚀 Deployment Guide
+
+This project is a monorepo consisting of a Frontend (`cerebro1-app`) and a Backend (`cerebro1-backend`).
+
+### 🌐 Frontend (Vercel)
+The frontend is optimized for **Vercel**.
+1. Import the repository into Vercel.
+2. Set the **Root Directory** to `cerebro1-app`.
+3. Add an Environment Variable: `VITE_BACKEND_URL` with your deployed backend's URL.
+
+### 📡 Backend (Render / Railway)
+The backend requires a persistent server for **WebSockets (Socket.io)** and therefore is **not suitable for Vercel Serverless Functions**.
+1. Deploy the `cerebro1-backend` folder to a platform like **Render**, **Railway**, or **Fly.io**.
+2. Ensure the platform supports long-running Node.js processes.
+3. If using Render, use a "Web Service" with the build command `npm install` and start command `node index.js`.
+
